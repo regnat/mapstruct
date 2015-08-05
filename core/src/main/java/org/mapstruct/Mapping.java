@@ -126,6 +126,13 @@ public @interface Mapping {
     boolean ignore() default false;
 
     /**
+     * Whether the property specified via {@link #target()} should be initialized by a constructor or not.
+     *
+     * @return {@code true} if the given property should be initialized by a constructor, {@code false} otherwise
+     */
+    boolean inConstructor() default false;
+
+    /**
      * A qualifier can be specified to aid the selection process of a suitable mapper. This is useful in case multiple
      * mapping methods (hand written or generated) qualify and thus would result in an 'Ambiguous mapping methods found'
      * error. A qualifier is a custom annotation and can be placed on a hand written mapper class or a method.
