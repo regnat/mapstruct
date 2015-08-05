@@ -23,7 +23,6 @@
     <#list beforeMappingReferencesWithoutMappingTarget as callback>
     	<@includeModel object=callback targetBeanName=resultName targetType=resultType/>
     	<#if !callback_has_next>
-
     	</#if>
     </#list>
     <#if !mapNullToDefault>
@@ -33,7 +32,7 @@
     </#if>
 
     <#if !existingInstanceMapping>
-        <@includeModel object=resultType/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=resultType/><#else>new <@includeModel object=resultType/>()</#if>;
+        <@includeModel object=resultType/> ${resultName} = <#if factoryMethod??><@includeModel object=factoryMethod targetType=resultType/><#else>new <@includeModel object=resultType/>(<#list inConstructorMappings as mapping><#-- TODO --></#list>)</#if>;
 
     </#if>
     <#list beforeMappingReferencesWithMappingTarget as callback>

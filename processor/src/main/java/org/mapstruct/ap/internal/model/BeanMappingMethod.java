@@ -67,6 +67,7 @@ public class BeanMappingMethod extends MappingMethod {
     private final List<PropertyMapping> propertyMappings;
     private final Map<String, List<PropertyMapping>> mappingsByParameter;
     private final List<PropertyMapping> constantMappings;
+    private final List<PropertyMapping> inConstructorMappings;
     private final MethodReference factoryMethod;
     private final boolean mapNullToDefault;
     private final Type resultType;
@@ -302,6 +303,7 @@ public class BeanMappingMethod extends MappingMethod {
                                     .dateFormat( mapping.getDateFormat() )
                                     .existingVariableNames( existingVariableNames )
                                     .dependsOn( mapping.getDependsOn() )
+                                    .inConstructor( mapping.isInConstructor() )
                                     .build();
                                 handledTargets.add( mapping.getTargetName() );
                                 unprocessedSourceParameters.remove( sourceRef.getParameter() );
@@ -327,6 +329,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .resultType( mapping.getResultType() )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping.getDependsOn() )
+                            .inConstructor( mapping.isInConstructor() )
                             .build();
                         handledTargets.add( mapping.getTargetName() );
                     }
@@ -343,6 +346,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .targetReadAccessor( targetWriteAccessor )
                             .targetPropertyName( mapping.getTargetName() )
                             .dependsOn( mapping.getDependsOn() )
+                            .inConstructor( mapping.isInConstructor() )
                             .build();
                         handledTargets.add( mapping.getTargetName() );
                     }
@@ -490,6 +494,7 @@ public class BeanMappingMethod extends MappingMethod {
                             .dateFormat( mapping != null ? mapping.getDateFormat() : null )
                             .existingVariableNames( existingVariableNames )
                             .dependsOn( mapping != null ? mapping.getDependsOn() : Collections.<String>emptyList() )
+                            /* .inConstructor( mapping.isInConstructor() ) */
                             .build();
 
                         propertyMappings.add( propertyMapping );
@@ -592,11 +597,16 @@ public class BeanMappingMethod extends MappingMethod {
         // parameter mapping.
         this.mappingsByParameter = new HashMap<String, List<PropertyMapping>>();
         this.constantMappings = new ArrayList<PropertyMapping>( propertyMappings );
+        this.inConstructorMappings = new ArrayList<PropertyMapping>();
         for ( Parameter sourceParameter : getSourceParameters() ) {
             ArrayList<PropertyMapping> mappingsOfParameter = new ArrayList<PropertyMapping>();
             mappingsByParameter.put( sourceParameter.getName(), mappingsOfParameter );
             for ( PropertyMapping mapping : propertyMappings ) {
-                if ( sourceParameter.getName().equals( mapping.getSourceBeanName() ) ) {
+                if ( mapping.getInConstructor() ) {
+                    inConstructorMappings.add( mapping );
+                    constantMappings.remove( mapping );
+                }
+                else if ( sourceParameter.getName().equals( mapping.getSourceBeanName() ) ) {
                     mappingsOfParameter.add( mapping );
                     constantMappings.remove( mapping );
                 }
@@ -613,6 +623,10 @@ public class BeanMappingMethod extends MappingMethod {
 
     public List<PropertyMapping> getConstantMappings() {
         return constantMappings;
+    }
+
+    public List<PropertyMapping> getInConstructorMappings() {
+        return inConstructorMappings;
     }
 
     public Map<String, List<PropertyMapping>> getPropertyMappingsByParameter() {

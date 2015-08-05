@@ -66,6 +66,7 @@ public class PropertyMapping extends ModelElement {
     private final Type targetType;
     private final Assignment assignment;
     private final List<String> dependsOn;
+    private final boolean inConstructor;
 
     @SuppressWarnings("unchecked")
     private static class MappingBuilderBase<T extends MappingBuilderBase<T>> {
@@ -121,6 +122,7 @@ public class PropertyMapping extends ModelElement {
         private List<TypeMirror> qualifiers;
         private TypeMirror resultType;
         private SourceReference sourceReference;
+        private boolean inConstructor;
 
         public PropertyMappingBuilder sourceReference(SourceReference sourceReference) {
             this.sourceReference = sourceReference;
@@ -139,6 +141,11 @@ public class PropertyMapping extends ModelElement {
 
         public PropertyMappingBuilder dateFormat(String dateFormat) {
             this.dateFormat = dateFormat;
+            return this;
+        }
+
+        public PropertyMappingBuilder inConstructor(boolean inConstructor) {
+            this.inConstructor = inConstructor;
             return this;
         }
 
@@ -234,7 +241,8 @@ public class PropertyMapping extends ModelElement {
                 targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
                 targetType,
                 assignment,
-                dependsOn
+                dependsOn,
+                inConstructor
             );
         }
 
@@ -544,6 +552,7 @@ public class PropertyMapping extends ModelElement {
         private String dateFormat;
         private List<TypeMirror> qualifiers;
         private TypeMirror resultType;
+        private boolean inConstructor;
 
         public ConstantMappingBuilder constantExpression(String constantExpression) {
             this.constantExpression = constantExpression;
@@ -562,6 +571,11 @@ public class PropertyMapping extends ModelElement {
 
         public ConstantMappingBuilder resultType(TypeMirror resultType) {
             this.resultType = resultType;
+            return this;
+        }
+
+        public ConstantMappingBuilder inConstructor(boolean inConstructor) {
+            this.inConstructor = inConstructor;
             return this;
         }
 
@@ -645,7 +659,8 @@ public class PropertyMapping extends ModelElement {
                 targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
                 targetType,
                 assignment,
-                dependsOn
+                dependsOn,
+                inConstructor
             );
         }
     }
@@ -653,9 +668,15 @@ public class PropertyMapping extends ModelElement {
     public static class JavaExpressionMappingBuilder extends MappingBuilderBase<JavaExpressionMappingBuilder> {
 
         private String javaExpression;
+        private boolean inConstructor;
 
         public JavaExpressionMappingBuilder javaExpression(String javaExpression) {
             this.javaExpression = javaExpression;
+            return this;
+        }
+
+        public JavaExpressionMappingBuilder inConstructor(boolean inConstructor) {
+            this.inConstructor = inConstructor;
             return this;
         }
 
@@ -690,7 +711,8 @@ public class PropertyMapping extends ModelElement {
                 targetReadAccessor != null ? targetReadAccessor.getSimpleName().toString() : null,
                 targetType,
                 assignment,
-                dependsOn
+                dependsOn,
+                inConstructor
             );
         }
 
@@ -698,13 +720,14 @@ public class PropertyMapping extends ModelElement {
 
     // Constructor for creating mappings of constant expressions.
     private PropertyMapping(String name, String targetWriteAccessorName, String targetReadAccessorName, Type targetType,
-                            Assignment propertyAssignment, List<String> dependsOn) {
-        this( name, null, targetWriteAccessorName, targetReadAccessorName, targetType, propertyAssignment, dependsOn );
+                            Assignment propertyAssignment, List<String> dependsOn, boolean inConstructor) {
+        this( name, null, targetWriteAccessorName, targetReadAccessorName,
+                            targetType, propertyAssignment, dependsOn, inConstructor );
     }
 
     private PropertyMapping(String name, String sourceBeanName, String targetWriteAccessorName,
                             String targetReadAccessorName, Type targetType, Assignment assignment,
-                            List<String> dependsOn) {
+                            List<String> dependsOn, boolean inConstructor) {
         this.name = name;
         this.sourceBeanName = sourceBeanName;
         this.targetWriteAccessorName = targetWriteAccessorName;
@@ -712,6 +735,7 @@ public class PropertyMapping extends ModelElement {
         this.targetType = targetType;
         this.assignment = assignment;
         this.dependsOn = dependsOn != null ? dependsOn : Collections.<String>emptyList();
+        this.inConstructor = inConstructor;
     }
 
     /**
@@ -748,6 +772,10 @@ public class PropertyMapping extends ModelElement {
 
     public List<String> getDependsOn() {
         return dependsOn;
+    }
+
+    public boolean getInConstructor() {
+        return inConstructor;
     }
 
     @Override

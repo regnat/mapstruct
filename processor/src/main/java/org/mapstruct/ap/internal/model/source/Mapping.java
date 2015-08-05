@@ -58,6 +58,7 @@ public class Mapping {
     private final List<TypeMirror> qualifiers;
     private final TypeMirror resultType;
     private final boolean isIgnored;
+    private final boolean isInConstructor;
     private final List<String> dependsOn;
 
     private final AnnotationMirror mirror;
@@ -136,6 +137,7 @@ public class Mapping {
             dateFormat,
             mappingPrism.qualifiedBy(),
             mappingPrism.ignore(),
+            mappingPrism.inConstructor(),
             mappingPrism.mirror,
             mappingPrism.values.source(),
             mappingPrism.values.target(),
@@ -148,7 +150,7 @@ public class Mapping {
     @SuppressWarnings("checkstyle:parameternumber")
     private Mapping(String sourceName, String constant, String javaExpression, String targetName,
                     String dateFormat, List<TypeMirror> qualifiers,
-                    boolean isIgnored, AnnotationMirror mirror,
+                    boolean isIgnored, boolean isInConstructor, AnnotationMirror mirror,
                     AnnotationValue sourceAnnotationValue, AnnotationValue targetAnnotationValue,
                     AnnotationValue dependsOnAnnotationValue,
                     TypeMirror resultType, List<String> dependsOn) {
@@ -159,6 +161,7 @@ public class Mapping {
         this.dateFormat = dateFormat;
         this.qualifiers = qualifiers;
         this.isIgnored = isIgnored;
+        this.isInConstructor = isInConstructor;
         this.mirror = mirror;
         this.sourceAnnotationValue = sourceAnnotationValue;
         this.targetAnnotationValue = targetAnnotationValue;
@@ -231,6 +234,10 @@ public class Mapping {
 
     public List<TypeMirror> getQualifiers() {
         return qualifiers;
+    }
+
+    public boolean isInConstructor() {
+        return isInConstructor;
     }
 
     public boolean isIgnored() {
@@ -308,6 +315,7 @@ public class Mapping {
             dateFormat,
             qualifiers,
             isIgnored,
+            isInConstructor,
             mirror,
             sourceAnnotationValue,
             targetAnnotationValue,
@@ -335,6 +343,7 @@ public class Mapping {
             dateFormat,
             qualifiers,
             isIgnored,
+            isInConstructor,
             mirror,
             sourceAnnotationValue,
             targetAnnotationValue,
